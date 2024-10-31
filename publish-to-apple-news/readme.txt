@@ -3,9 +3,9 @@ Contributors: potatomaster, kevinfodness, jomurgel, tylermachado, benpbolton, al
 Donate link: https://wordpress.org
 Tags: publish, apple, news, iOS
 Requires at least: 6.3
-Tested up to: 6.6.2
+Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 2.6.0
+Stable tag: 2.6.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl.html
 
@@ -44,6 +44,10 @@ Please visit our [wiki](https://github.com/alleyinteractive/apple-news/wiki) for
 4. Manage posts in Apple News right from the post edit screen
 
 == Changelog ==
+
+= 2.6.1 =
+
+* Enhancement: Ensured support for WordPress 6.7.
 
 = 2.6.0 =
 
