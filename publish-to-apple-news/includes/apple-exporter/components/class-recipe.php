@@ -791,7 +791,7 @@ class Recipe extends Component {
 		$items = self::recipe_items( $post_content, 'body' );
 
 		foreach ( $items as $item ) {
-			if ( self::is_recipe_item_for_recipe_html( $item, $recipe ) ) {
+			if ( self::is_allowed_recipe_item( $item ) ) {
 				return $item;
 			}
 		}
@@ -815,7 +815,7 @@ class Recipe extends Component {
 			$items = self::recipe_items( $html, 'head' );
 
 			foreach ( $items as $item ) {
-				if ( self::is_recipe_item_for_recipe_html( $item, $recipe ) ) {
+				if ( self::is_allowed_recipe_item( $item ) ) {
 					return $item;
 				}
 			}
@@ -862,8 +862,8 @@ class Recipe extends Component {
 				try {
 					$json = json_decode( $node->textContent, true, 512, JSON_THROW_ON_ERROR ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
-					if ( isset( $json['@type'] ) && 'Recipe' === $json['@type'] ) {
-						$carry[] = $json;
+					if ( is_array( $json ) ) {
+						$carry = self::recipe_items_in_graph( $carry, $json );
 					}
 				} catch ( \JsonException $e ) {
 					// Do nothing.
@@ -880,18 +880,38 @@ class Recipe extends Component {
 	}
 
 	/**
-	 * Best-guess if the given schema item is for the given recipe HTML.
+	 * Recursively search for JSON-LD Recipe items in the given JSON-LD data.
 	 *
-	 * @param array  $schema The schema item to check.
-	 * @param string $html   The recipe HTML to check.
-	 * @return bool True if the schema item is for the recipe HTML, false otherwise.
+	 * @param array $carry The array to accumulate recipe items.
+	 * @param array $json  The JSON to search for recipe items.
+	 * @return array The recipe items found in the JSON.
 	 */
-	private static function is_recipe_item_for_recipe_html( array $schema, string $html ) {
+	private static function recipe_items_in_graph( array $carry, array $json ) {
+		if ( isset( $json['@type'] ) && 'Recipe' === $json['@type'] ) {
+			$carry[] = $json;
+		}
+
+		if ( isset( $json['@graph'] ) && is_array( $json['@graph'] ) ) {
+			foreach ( $json['@graph'] as $graph ) {
+				$carry = self::recipe_items_in_graph( $carry, $graph );
+			}
+		}
+
+		return $carry;
+	}
+
+	/**
+	 * Confirm that the given schema item can be used for recipe HTML.
+	 *
+	 * @param array $schema The schema item to check.
+	 * @return bool
+	 */
+	private static function is_allowed_recipe_item( array $schema ) {
+		// This method used to confirm that the schema 'name' appeared in the HTML, but this was found to be too restrictive.
 		return (
 			isset( $schema['name'] )
 			&& is_string( $schema['name'] )
 			&& strlen( $schema['name'] ) > 0
-			&& str_contains( $html, $schema['name'] )
 		);
 	}
 
