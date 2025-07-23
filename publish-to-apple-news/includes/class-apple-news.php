@@ -50,7 +50,7 @@ class Apple_News {
 	 * @var string
 	 * @access public
 	 */
-	public static string $version = '2.7.1';
+	public static string $version = '2.7.2';
 
 	/**
 	 * Link to support for the plugin on WordPress.org.
@@ -436,6 +436,11 @@ class Apple_News {
 	 * @access public
 	 */
 	public function action_enqueue_block_editor_assets(): void {
+
+		if ( empty( Admin_Apple_Settings_Section::$loaded_settings['post_types'] ) ) {
+			return;
+		}
+		
 		// Bail if the post type is not one of the Publish to Apple News post types configured in settings.
 		if ( ! in_array( get_post_type(), (array) Admin_Apple_Settings_Section::$loaded_settings['post_types'], true ) ) {
 			return;
@@ -584,7 +589,7 @@ class Apple_News {
 	 */
 	public function filter_update_post_metadata( $check, $object_id, $meta_key, $meta_value, $prev_value ) {
 		if ( empty( $prev_value ) ) {
-			$old_value = get_metadata( 'post', $object_id, $meta_key );
+			$old_value = get_metadata_raw( 'post', $object_id, $meta_key );
 			if ( false !== $old_value && is_array( $old_value ) && 1 === count( $old_value ) ) {
 				if ( $old_value[0] === $meta_value ) {
 					return true;
