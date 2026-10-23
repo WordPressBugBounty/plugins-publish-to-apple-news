@@ -3,7 +3,7 @@
  * Plugin Name: Publish To Apple News
  * Plugin URI:  http://github.com/alleyinteractive/apple-news
  * Description: Export and sync posts to Apple format.
- * Version:     2.9.1
+ * Version:     2.8.1
  * Author:      Alley
  * Author URI:  https://alley.com
  * Text Domain: apple-news
@@ -69,6 +69,7 @@ if ( ! defined( 'WPCOM_IS_VIP_ENV' ) || ! WPCOM_IS_VIP_ENV ) {
 
 // Initialize plugin class.
 require __DIR__ . '/includes/class-apple-news.php';
+require __DIR__ . '/includes/class-apple-news-channels.php';
 require __DIR__ . '/admin/class-admin-apple-news.php';
 
 /**
