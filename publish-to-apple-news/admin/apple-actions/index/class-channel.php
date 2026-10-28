@@ -19,29 +19,27 @@ use Apple_Push_API\Request\Request_Exception;
  * @package Apple_News
  */
 class Channel extends API_Action {
-
 	/**
 	 * Get the channel data from Apple News.
 	 *
 	 * @return object|null An object containing the response from the API or null on failure.
 	 */
 	public function perform() {
-		$transient_key = \Apple_News_Channels::get_channel_transient_key( $this->channel_key );
-		$channel       = get_transient( $transient_key );
+		$channel = get_transient( 'apple_news_channel' );
 
 		if ( false === $channel ) {
 			$channel = '';
 
 			if ( $this->is_api_configuration_valid() ) {
 				try {
-					$channel = $this->get_api()->get_channel( $this->get_channel_id() );
+					$channel = $this->get_api()->get_channel( $this->get_setting( 'api_channel' ) );
 				} catch ( Request_Exception $e ) {
 					// Do nothing.
 					unset( $e );
 				}
 			}
 
-			set_transient( $transient_key, $channel, 300 );
+			set_transient( 'apple_news_channel', $channel, 300 );
 		}
 
 		if ( '' === $channel ) {

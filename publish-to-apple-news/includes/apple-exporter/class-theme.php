@@ -437,13 +437,13 @@ class Theme {
 	/**
 	 * Gets a list of registered themes.
 	 *
+	 * @access public
 	 * @return array The theme registry.
 	 */
-	public static function get_registry(): array {
+	public static function get_registry() {
 
 		// Attempt to get the registry.
 		$registry = get_option( self::INDEX_KEY );
-
 		if ( empty( $registry ) || ! is_array( $registry ) ) {
 			return [];
 		}
@@ -535,7 +535,7 @@ class Theme {
 	 */
 	private static function sort_registry( $registry ) {
 
-		// Sort the registry.
+		// Sort the regsitry.
 		sort( $registry );
 
 		// Ensure the active theme is first.

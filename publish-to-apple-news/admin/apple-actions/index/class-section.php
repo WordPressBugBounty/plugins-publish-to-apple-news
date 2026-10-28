@@ -11,6 +11,7 @@ namespace Apple_Actions\Index;
 require_once dirname( __DIR__ ) . '/class-api-action.php';
 
 use Apple_Actions\API_Action;
+use Apple_Exporter\Settings;
 
 /**
  * A class to handle a section request from the admin.
@@ -74,14 +75,14 @@ class Section extends API_Action {
 	 *
 	 * Cache for 5 minutes to avoid too many API requests.
 	 *
+	 * @access public
 	 * @return array
 	 */
 	public function get_sections() {
-		$transient_key = \Apple_News_Channels::get_sections_transient_key( $this->channel_key );
-		$sections      = get_transient( $transient_key );
+		$sections = get_transient( 'apple_news_sections' );
 		if ( false === $sections ) {
 			$sections = [];
-			$channel  = $this->get_channel_id();
+			$channel  = $this->get_setting( 'api_channel' );
 			if ( ! empty( $channel ) ) {
 				try {
 					$apple_news_sections = $this->get_api()->get_sections( $channel );
@@ -90,7 +91,7 @@ class Section extends API_Action {
 					$sections = [];
 				}
 
-				set_transient( $transient_key, $sections, 300 );
+				set_transient( 'apple_news_sections', $sections, 300 );
 			}
 		}
 
